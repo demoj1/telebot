@@ -1,0 +1,10 @@
+resolver: lts-14.7
+packages:
+- .
+
+extra-deps:
+- git: https://github.com/dmitrydprog/telegram-bot-simple.git
+  commit: a89da05a127453b95fdc8b82c3aebbd7a80c8c92
+- text-format-simple-1.1.0
+
+system-ghc: false

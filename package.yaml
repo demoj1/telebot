@@ -1,0 +1,44 @@
+name:                telebot
+version:             0.1.0.0
+github:              "Github username here/untitled"
+license:             BSD3
+author:              "Author name here"
+maintainer:          "Author email here"
+copyright:           "2019 Author name here"
+
+extra-source-files:
+- README.md
+
+description: Please see the README on GitHub at <https://github.com/Github username here/untitled#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- containers
+- graphite
+- mtl
+- wreq
+- lens
+- json
+- parallel
+- bytestring
+- transformers
+- aeson
+- text
+- http-api-data
+- http-client
+- http-client-tls
+- sort
+- time
+- utf8-string
+- iso8601-time
+- telegram-bot-simple
+- text-format-simple
+
+executables:
+  telebot:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
