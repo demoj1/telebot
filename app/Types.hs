@@ -80,6 +80,9 @@ $(deriveFromJSON defaultOptions ''Entity)
 
 type IssueFilter = [Issue] -> [Issue]
 
+type Predicate a = a -> Bool
+type IssuePredicate = Predicate Issue
+
 data State = 
   State
     { issuesList :: [Issue]

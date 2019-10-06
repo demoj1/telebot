@@ -45,31 +45,31 @@ developers =
 toLowerS :: String -> String
 toLowerS = map toLower
 
-(<|>) :: (a -> Bool) -> (a -> Bool) -> (a -> Bool)
+(<|>) :: Predicate a -> Predicate a -> Predicate a
 (<|>) = liftM2 (||)
 
-(<&>) :: (a -> Bool) -> (a -> Bool) -> (a -> Bool)
+(<&>) :: Predicate a -> Predicate a -> Predicate a
 (<&>) = liftM2 (&&)
 
-devP :: Issue -> Bool
+devP :: IssuePredicate
 devP issues =
   case assigned_to issues of
     Just assigned -> name assigned `elem` developers
     Nothing       -> False
 
-statusP :: [String] -> Issue -> Bool
+statusP :: [String] -> IssuePredicate
 statusP statusVal issue = (name . status) issue `elem` statusVal
 
-smartPStrong :: String -> Issue -> Bool
+smartPStrong :: String -> IssuePredicate
 smartPStrong searchText = smartP searchText (<&>) True
 
-smartPWeak :: String -> Issue -> Bool
+smartPWeak :: String -> IssuePredicate
 smartPWeak searchText = smartP searchText (<|>) False
 
 smartP :: String
-       -> ((Issue -> Bool)  -> (Issue -> Bool)  -> (Issue -> Bool))
+       -> (IssuePredicate -> IssuePredicate  -> IssuePredicate)
        -> Bool 
-       -> Issue -> Bool
+       -> IssuePredicate
 smartP searchText op' initial =
   foldl op' (const initial) (map (\w i -> w `isInfixOf` issueToSmartSearch i) (words (toLowerS searchText)))
   where
