@@ -42,3 +42,6 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -Wall
+    - -fno-warn-name-shadowing
+    - -fwarn-incomplete-uni-patterns

@@ -6,7 +6,7 @@
 module Types where
 
 import Data.Aeson.TH
-import Data.Text     (Text)
+import Data.Text (Text) 
 import Data.Time.ISO8601
 
 data Entity =
@@ -92,8 +92,6 @@ data State =
 
 data Action
   = NoOp
-  | Echo Text
-  | FillBuffer [Issue]
   | NeedReview Text
   | OnReview Text
   | NewDev Text

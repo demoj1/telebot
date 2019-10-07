@@ -16,7 +16,6 @@ import System.IO.Unsafe
 import Telegram.Bot.API
 import Telegram.Bot.Simple
 import Telegram.Bot.Simple.UpdateParser
-import Telegram.Bot.Simple.Debug
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (forever, liftM2)
 import System.Timeout (timeout)
@@ -27,12 +26,6 @@ import System.Environment (getEnv)
 {-# NOINLINE cache #-}
 cache :: IORef State
 cache = unsafePerformIO $ newIORef (State [] [])
-
-chunks :: Int -> [a] -> [[a]]
-chunks _ [] = []
-chunks n xs =
-    let (ys, zs) = splitAt n xs
-    in  ys : chunks n zs
 
 echoBot :: BotApp [Issue] Action
 echoBot =
@@ -65,6 +58,7 @@ updateToAction _ =
 replyM :: String -> BotM ()
 replyM msg = reply $ ReplyMessage (pack msg) (Just HTML) (Just True) Nothing Nothing Nothing
 
+replyIssues :: [Issue] -> IssueFilter -> BotM ()
 replyIssues issues filter' = 
     issues 
   & filter'
@@ -151,4 +145,5 @@ run = do
   env <- defaultTelegramClientEnv (Token (pack token))
   startBot_ (conversationBot updateChatId echoBot) env
 
+main :: IO ()
 main = run

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 27c3b278aedbe4574d4cbe034caa0e3523c63a179c3de6fe7b6e9eb020754da2
+-- hash: d21e56d2eeac660c2a74d8406f858186e29b1e76acd365bd6d7b026840718303
 
 name:           telebot
 version:        0.1.0.0
@@ -32,7 +32,7 @@ executable telebot
       Paths_telebot
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -fno-warn-name-shadowing -fwarn-incomplete-uni-patterns
   build-depends:
       aeson
     , base >=4.7 && <5
