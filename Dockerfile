@@ -22,7 +22,12 @@ RUN mv "$(stack path --local-install-root --system-ghc)/bin" /app/build/bin
 
 # ---------------------------------------------------------
 
-FROM ubuntu:16.04 as app
+FROM ubuntu:18.04 as app
+
+RUN apt -y upgrade && \
+    apt -y update && \
+    apt -y install ca-certificates
+
 RUN mkdir -p /app
 WORKDIR /app
 
@@ -30,4 +35,3 @@ COPY --from=dependencies /app/build/libgmp.deb /tmp
 RUN dpkg -i /tmp/libgmp.deb && rm /tmp/libgmp.deb
 
 COPY --from=build /app/build/bin .
-CMD telebot
