@@ -21,18 +21,19 @@ instance Show Entity where
 
 data Issue =
   Issue
-    { iId           :: Integer
-    , project       :: Entity
-    , tracker       :: Entity
-    , status        :: Entity
-    , priority      :: Entity
-    , author        :: Entity
-    , assigned_to   :: Maybe Entity
-    , fixed_version :: Maybe Entity
-    , subject       :: String
-    , description   :: Maybe String
-    , start_date    :: Maybe String
-    , created_on    :: String
+    { iId             :: Integer
+    , project         :: Entity
+    , tracker         :: Entity
+    , status          :: Entity
+    , priority        :: Entity
+    , author          :: Entity
+    , assigned_to     :: Maybe Entity
+    , fixed_version   :: Maybe Entity
+    , subject         :: String
+    , description     :: Maybe String
+    , start_date      :: Maybe String
+    , estimated_hours :: Maybe Float
+    , created_on      :: String
     }
   deriving (Eq)
   
@@ -47,13 +48,18 @@ showMaybe :: Show a => Maybe a -> String
 showMaybe (Just s) = show s
 showMaybe Nothing = "---"
 
+formatOrEmpty :: Show a => String -> Maybe a -> String -> String 
+formatOrEmpty prefix (Just e) suffix = prefix ++ show e ++ suffix
+formatOrEmpty _ Nothing _ = "" 
+
 instance Show Issue where
   show issue = 
-         "| <b>" ++ (show . priority $ issue) ++ "</b> " ++ (formatDate . created_on $ issue)
+         "| <b>" ++ (show . priority $ issue) ++ "</b> " ++ (show . status $ issue)  ++ " " ++ (show . tracker $ issue)
+    ++ "\n| " ++ (formatDate . created_on $ issue) ++ formatOrEmpty " (оценка " (estimated_hours issue) " ч)"
     ++ "\n| " ++ "http://r.tender.pro/issues/" ++ (show . iId $ issue)
-    ++ "\n| " ++ subject issue
-    ++ "\n| " ++ (show . status $ issue)
     ++ "\n| " ++ (show . author $ issue) ++ " -> " ++ (showMaybe . assigned_to $ issue)
+    ++ formatOrEmpty "\n| " (fixed_version issue) ""
+    ++ "\n| " ++ subject issue
 
 data Root =
   Root

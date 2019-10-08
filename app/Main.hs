@@ -60,8 +60,8 @@ updateToAction _ =
     <|> Help          <$  command "help"
     <|> Help          <$  command "help@TestFsharpBot"
     <|> D             <$  command "d"
-    
 
+    
 replyM :: String -> BotM ()
 replyM msg = reply $ ReplyMessage (pack msg) (Just HTML) (Just True) Nothing Nothing Nothing
 
@@ -69,7 +69,7 @@ replyIssues :: [Issue] -> IssueFilter -> BotM ()
 replyIssues issues filter' = 
     issues 
   & filter'
-  & take 20
+  & take 10
   & joinNL
   & replyM
 
@@ -85,32 +85,32 @@ handleAction action model =
     S msg ->
       model <# do
         issues <- liftIO $ issuesList <$> readIORef cache
-        replyIssues issues (filter (smartPWeak (unpack msg)))
+        replyIssues issues $ smartWeak (unpack msg)
         return NoOp
     SS msg ->
       model <# do
         issues <- liftIO $ issuesList <$> readIORef cache
-        replyIssues issues (filter (smartPStrong (unpack msg)))
+        replyIssues issues $ smartStrong (unpack msg)
         return NoOp
     NeedReview msg ->
       model <# do
         issues <- liftIO $ issuesList <$> readIORef cache
-        replyIssues issues (needReview . filter (smartPStrong (unpack msg)))
+        replyIssues issues $ smartStrong (unpack msg) . needReview
         return NoOp
     OnReview msg ->
       model <# do
         issues <- liftIO $ issuesList <$> readIORef cache
-        replyIssues issues (onReview . filter (smartPStrong (unpack msg)))
+        replyIssues issues $ smartStrong (unpack msg) . onReview
         return NoOp
     NewDev msg ->
       model <# do
         issues <- liftIO $ issuesList <$> readIORef cache
-        replyIssues issues (newDev . filter (smartPStrong (unpack msg)))
+        replyIssues issues $ smartStrong (unpack msg) . newDev
         return NoOp
     ReadyToDeploy msg ->
       model <# do
         issues <- liftIO $ issuesList <$> readIORef cache
-        replyIssues issues (readyToDeploy . filter (smartPStrong (unpack msg)))
+        replyIssues issues $ smartStrong (unpack msg) . readyToDeploy
         return NoOp
     Help ->
       model <# do

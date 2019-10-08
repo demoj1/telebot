@@ -5,8 +5,8 @@ module Filters (
   , onReview
   , readyToDeploy
   , newDev
-  , smartPStrong
-  , smartPWeak
+  , smartStrong
+  , smartWeak
 ) where
 
 import Types
@@ -88,6 +88,12 @@ smartP searchText op' initial =
         ]
       & concat
       & toLowerS
+
+smartWeak :: String -> IssueFilter
+smartWeak msg issues = issues & filter (smartPWeak msg) & sortOn issuePriority
+
+smartStrong :: String -> IssueFilter
+smartStrong msg issues = issues & filter (smartPStrong msg) & sortOn issuePriority
 
 needReview :: IssueFilter
 needReview issues = issues & filter (statusP ["Требует ревью решения"]) & sortOn issuePriority
