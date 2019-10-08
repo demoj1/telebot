@@ -31,7 +31,7 @@ data Issue =
     , fixed_version :: Maybe Entity
     , subject       :: String
     , description   :: Maybe String
-    , start_date    :: String
+    , start_date    :: Maybe String
     , created_on    :: String
     }
   deriving (Eq)
@@ -99,3 +99,4 @@ data Action
   | S Text
   | SS Text
   | Help
+  | D

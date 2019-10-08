@@ -4,6 +4,7 @@ import Api
 import Filters
 import Types
 
+import Data.Set (toList, fromList)
 import Control.Applicative ((<|>))
 import Control.Lens hiding ((<&>))
 import Control.Monad.Trans (liftIO)
@@ -21,7 +22,12 @@ import Control.Monad (forever, liftM2)
 import System.Timeout (timeout)
 import Data.Maybe (isJust)
 import Data.Set (fromList, toList)
+import Data.Time
 import System.Environment (getEnv)
+import Prelude hiding (id)
+
+mkUniq :: Ord a => [a] -> [a]
+mkUniq = toList . fromList
 
 {-# NOINLINE cache #-}
 cache :: IORef State
@@ -53,6 +59,7 @@ updateToAction _ =
     <|> SS            <$> command "ss@TestFsharpBot"
     <|> Help          <$  command "help"
     <|> Help          <$  command "help@TestFsharpBot"
+    <|> D             <$  command "d"
     
 
 replyM :: String -> BotM ()
@@ -62,7 +69,7 @@ replyIssues :: [Issue] -> IssueFilter -> BotM ()
 replyIssues issues filter' = 
     issues 
   & filter'
-  & take 10
+  & take 20
   & joinNL
   & replyM
 
@@ -70,6 +77,11 @@ handleAction :: Action -> [Issue] -> Eff Action [Issue]
 handleAction action model =
   case action of
     NoOp -> pure model
+    D ->
+      model <# do
+        issues <- liftIO $ issuesList <$> readIORef cache
+        replyM $ map (show . iId) issues & foldl (\a i -> a ++ "\n" ++ i) ""
+        return NoOp
     S msg ->
       model <# do
         issues <- liftIO $ issuesList <$> readIORef cache
@@ -102,7 +114,8 @@ handleAction action model =
         return NoOp
     Help ->
       model <# do
-        replyM "Фильтр по задачам из редмайна. Список задач обновляется раз в 3 минуты.\n \ 
+        replyM
+          "Фильтр по задачам из редмайна. Список задач обновляется раз в 3 минуты.\n \ 
                 \Список сохраняется в кеш, можно не бояться делать много запросов.\n \ 
                 \<b>Ограничение на вывод задач 10 штук. Для более подробного вывода, используйте фильтры</b>\n \ 
                 \\n \ 
@@ -128,19 +141,18 @@ run :: IO ()
 run = do
   username <- getEnv "TELEBOT_USERNAME"
   password <- getEnv "TELEBOT_PASSWORD"
-  token <- getEnv "TELEBOT_TOKEN"
+  token    <- getEnv "TELEBOT_TOKEN"
+  
+  _ <- forkIO $
+    forever $ do
+      time <- Data.Time.getCurrentTime
+      print $ show time
+      _ <- forkIO $ do
+        tasks <- downloadIssues username password
+        print $ "Fetched tasks: " ++ show (length tasks)
+        writeIORef cache State {issuesList = tasks, versions = []}
 
-  forkIO $ forever $ do
-    print "Loop..."
-    tasks <- downloadIssues username password
-    let versions = tasks 
-                   & map fixed_version
-                   & filter isJust
-                   & map showMaybe
-                   & toList . fromList
-    
-    writeIORef cache State {issuesList = tasks, versions = versions}
-    threadDelay (1000000 * 3 * 60)
+      threadDelay (1000000 * 60 * 3)
 
   env <- defaultTelegramClientEnv (Token (pack token))
   startBot_ (conversationBot updateChatId echoBot) env
