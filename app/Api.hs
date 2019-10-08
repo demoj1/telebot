@@ -53,6 +53,3 @@ downloadIssues username password = do
       return $ map (formatUrl baseUrl "offset" . (* limit')) [0 .. pageCount + 1]
       where
         formatUrl url k v = url ++ "&" ++ k ++ "=" ++ show v
-
---TODO: Перетестировать таску с заказами
---TODO: Узнать у димы про типы полей
