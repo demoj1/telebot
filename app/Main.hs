@@ -4,30 +4,20 @@ import Api
 import Filters
 import Types
 
-import Data.Set (toList, fromList)
 import Control.Applicative ((<|>))
 import Control.Lens hiding ((<&>))
 import Control.Monad.Trans (liftIO)
 import Data.Text (pack, unpack)
-import Data.Text.Encoding (decodeUtf8)
-import Data.Text.IO as T
 import Data.IORef
-import Data.ByteString.UTF8 (fromString)
 import System.IO.Unsafe
 import Telegram.Bot.API
 import Telegram.Bot.Simple
 import Telegram.Bot.Simple.UpdateParser
 import Control.Concurrent (forkIO, threadDelay)
-import Control.Monad (forever, liftM2)
-import System.Timeout (timeout)
-import Data.Maybe (isJust)
-import Data.Set (fromList, toList)
+import Control.Monad (forever)
 import Data.Time
 import System.Environment (getEnv)
 import Prelude hiding (id)
-
-mkUniq :: Ord a => [a] -> [a]
-mkUniq = toList . fromList
 
 {-# NOINLINE cache #-}
 cache :: IORef State
@@ -61,7 +51,6 @@ updateToAction _ =
     <|> Help          <$  command "help@TestFsharpBot"
     <|> D             <$  command "d"
 
-    
 replyM :: String -> BotM ()
 replyM msg = reply $ ReplyMessage (pack msg) (Just HTML) (Just True) Nothing Nothing Nothing
 
